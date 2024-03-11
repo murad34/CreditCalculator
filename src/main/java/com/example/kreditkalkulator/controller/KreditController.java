@@ -10,11 +10,21 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @RestController
-@RequestMapping()
+@RequestMapping("/credit")
 public class KreditController {
 
-    @PostMapping("/kredit")
+    @PostMapping("/calculator")
     public Kredit addOrder(@RequestBody Kredit kredit) {
+
+        if (kredit.getDownPayment() < kredit.getTotalPrice() * 0.2){
+            kredit.setError("İlkin ödəniş avtomobilin ümumi dəyərinin 20%-dən az ola bilməz");
+            return kredit;
+        }
+
+        if (kredit.getDownPayment() > kredit.getTotalPrice()){
+            kredit.setError("İlkin ödəniş avtomobilin ümumi dəyərindən artıq ola bilməz");
+            return kredit;
+        }
 
         BigDecimal bigDecimal = BigDecimal.valueOf(calculateAnnuityMonthlyPayment(kredit.getTotalPrice() - kredit.getDownPayment(), kredit.getTotalMonths())).setScale(2, RoundingMode.HALF_UP);
 

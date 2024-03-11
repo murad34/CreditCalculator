@@ -17,4 +17,6 @@ public class Kredit {
 
     private Double monthlyPayment;
 
+    private String error;
+
 }
