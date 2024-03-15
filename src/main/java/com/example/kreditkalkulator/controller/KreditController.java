@@ -10,23 +10,91 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @RestController
-@RequestMapping("/credit")
+@RequestMapping("/credit-calculator")
 public class KreditController {
 
-    @PostMapping("/calculator")
-    public Kredit addOrder(@RequestBody Kredit kredit) {
+    @PostMapping("/volkswagen")
+    public Kredit getCreditForVolkswagen(@RequestBody Kredit kredit) {
 
-        if (kredit.getDownPayment() < kredit.getTotalPrice() * 0.2){
-            kredit.setError("İlkin ödəniş avtomobilin ümumi dəyərinin 20%-dən az ola bilməz");
-            return kredit;
-        }
-
-        if (kredit.getDownPayment() > kredit.getTotalPrice()){
+        if (kredit.getDownPayment() > kredit.getTotalPrice()) {
             kredit.setError("İlkin ödəniş avtomobilin ümumi dəyərindən artıq ola bilməz");
             return kredit;
         }
 
-        BigDecimal bigDecimal = BigDecimal.valueOf(calculateAnnuityMonthlyPayment(kredit.getTotalPrice() - kredit.getDownPayment(), kredit.getTotalMonths())).setScale(2, RoundingMode.HALF_UP);
+        double b = 0;
+
+        if (kredit.getTotalMonths().equals(12)) {
+
+            b = (kredit.getDownPayment() - (0.006 * kredit.getTotalPrice()) - (0.025 * kredit.getTotalPrice()) - 10 - (0.0015 * (0.025 * kredit.getTotalPrice())) ) / 1.0015;
+
+        } else if (kredit.getTotalMonths().equals(24)) {
+
+            b = (kredit.getDownPayment() - (0.006 * kredit.getTotalPrice()) - (0.045 * kredit.getTotalPrice()) - 10 - (0.0015 * (0.045 * kredit.getTotalPrice())) ) / 1.0015;
+
+        } else if (kredit.getTotalMonths().equals(36)) {
+
+            b = (kredit.getDownPayment() - (0.006 * kredit.getTotalPrice()) - (0.056 * kredit.getTotalPrice()) - 10 - (0.0015 * (0.056 * kredit.getTotalPrice())) ) / 1.0015;
+
+        } else if (kredit.getTotalMonths().equals(48)) {
+
+            b = (kredit.getDownPayment() - (0.006 * kredit.getTotalPrice()) - (0.068 * kredit.getTotalPrice()) - 10 - (0.0015 * (0.068 * kredit.getTotalPrice())) ) / 1.0015;
+
+        } else if (kredit.getTotalMonths().equals(60)) {
+
+            b = (kredit.getDownPayment() - (0.006 * kredit.getTotalPrice()) - (0.078 * kredit.getTotalPrice()) - 10 - (0.0015 * (0.078 * kredit.getTotalPrice())) ) / 1.0015;
+
+        }
+
+        if ((b+1) < kredit.getTotalPrice() * 0.2) {
+            kredit.setError("İlkin ödəniş avtomobilin ümumi dəyərinin 20%-dən az ola bilməz");
+            return kredit;
+        }
+
+        BigDecimal bigDecimal = BigDecimal.valueOf(calculateAnnuityMonthlyPayment(kredit.getTotalPrice() - b, kredit.getTotalMonths())).setScale(2, RoundingMode.HALF_UP);
+
+        kredit.setMonthlyPayment(bigDecimal.doubleValue());
+
+        return kredit;
+    }
+
+    @PostMapping("/dongfeng")
+    public Kredit getCreditForDongfeng(@RequestBody Kredit kredit) {
+
+        if (kredit.getDownPayment() > kredit.getTotalPrice()) {
+            kredit.setError("İlkin ödəniş avtomobilin ümumi dəyərindən artıq ola bilməz");
+            return kredit;
+        }
+
+        double b = 0;
+
+        if (kredit.getTotalMonths().equals(12)) {
+
+            b = (kredit.getDownPayment() - 158 - (0.025 * kredit.getTotalPrice()));
+
+        } else if (kredit.getTotalMonths().equals(24)) {
+
+            b = (kredit.getDownPayment() - 158 - (0.045 * kredit.getTotalPrice()));
+
+        } else if (kredit.getTotalMonths().equals(36)) {
+
+            b = (kredit.getDownPayment() - 158 - (0.056 * kredit.getTotalPrice()));
+
+        } else if (kredit.getTotalMonths().equals(48)) {
+
+            b = (kredit.getDownPayment() - 158 - (0.068 * kredit.getTotalPrice()));
+
+        } else if (kredit.getTotalMonths().equals(59)) {
+
+            b = (kredit.getDownPayment() - 158 - (0.078 * kredit.getTotalPrice()));
+
+        }
+
+        if ((b+1) < kredit.getTotalPrice() * 0.2) {
+            kredit.setError("İlkin ödəniş avtomobilin ümumi dəyərinin 20%-dən az ola bilməz");
+            return kredit;
+        }
+
+        BigDecimal bigDecimal = BigDecimal.valueOf(calculateAnnuityMonthlyPayment(kredit.getTotalPrice() - b, kredit.getTotalMonths())).setScale(2, RoundingMode.HALF_UP);
 
         kredit.setMonthlyPayment(bigDecimal.doubleValue());
 
