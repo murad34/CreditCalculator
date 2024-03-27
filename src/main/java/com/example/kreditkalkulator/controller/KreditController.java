@@ -17,7 +17,7 @@ public class KreditController {
     public Kredit getCreditForVolkswagen(@RequestBody Kredit kredit) {
 
         if (kredit.getDownPayment() > kredit.getTotalPrice()) {
-            kredit.setError("İlkin ödəniş avtomobilin ümumi dəyərindən artıq ola bilməz");
+            kredit.setError("1");
             return kredit;
         }
 
@@ -25,28 +25,55 @@ public class KreditController {
 
         if (kredit.getTotalMonths().equals(12)) {
 
-            b = (kredit.getDownPayment() - (0.006 * kredit.getTotalPrice()) - (0.025 * kredit.getTotalPrice()) - 10 - (0.0015 * (0.025 * kredit.getTotalPrice())) ) / 1.0015;
+            b = (kredit.getDownPayment() - (0.006 * kredit.getTotalPrice()) - (0.025 * kredit.getTotalPrice()) - 10 - (0.0015 * (0.025 * kredit.getTotalPrice()))) / 1.0015;
 
         } else if (kredit.getTotalMonths().equals(24)) {
 
-            b = (kredit.getDownPayment() - (0.006 * kredit.getTotalPrice()) - (0.045 * kredit.getTotalPrice()) - 10 - (0.0015 * (0.045 * kredit.getTotalPrice())) ) / 1.0015;
+            b = (kredit.getDownPayment() - (0.006 * kredit.getTotalPrice()) - (0.045 * kredit.getTotalPrice()) - 10 - (0.0015 * (0.045 * kredit.getTotalPrice()))) / 1.0015;
 
         } else if (kredit.getTotalMonths().equals(36)) {
 
-            b = (kredit.getDownPayment() - (0.006 * kredit.getTotalPrice()) - (0.056 * kredit.getTotalPrice()) - 10 - (0.0015 * (0.056 * kredit.getTotalPrice())) ) / 1.0015;
+            b = (kredit.getDownPayment() - (0.006 * kredit.getTotalPrice()) - (0.056 * kredit.getTotalPrice()) - 10 - (0.0015 * (0.056 * kredit.getTotalPrice()))) / 1.0015;
 
         } else if (kredit.getTotalMonths().equals(48)) {
 
-            b = (kredit.getDownPayment() - (0.006 * kredit.getTotalPrice()) - (0.068 * kredit.getTotalPrice()) - 10 - (0.0015 * (0.068 * kredit.getTotalPrice())) ) / 1.0015;
+            b = (kredit.getDownPayment() - (0.006 * kredit.getTotalPrice()) - (0.068 * kredit.getTotalPrice()) - 10 - (0.0015 * (0.068 * kredit.getTotalPrice()))) / 1.0015;
 
         } else if (kredit.getTotalMonths().equals(60)) {
 
-            b = (kredit.getDownPayment() - (0.006 * kredit.getTotalPrice()) - (0.078 * kredit.getTotalPrice()) - 10 - (0.0015 * (0.078 * kredit.getTotalPrice())) ) / 1.0015;
+            b = (kredit.getDownPayment() - (0.006 * kredit.getTotalPrice()) - (0.078 * kredit.getTotalPrice()) - 10 - (0.0015 * (0.078 * kredit.getTotalPrice()))) / 1.0015;
 
         }
 
         if ((b+1) < kredit.getTotalPrice() * 0.2) {
-            kredit.setError("İlkin ödəniş avtomobilin ümumi dəyərinin 20%-dən az ola bilməz");
+
+            double minDownPayment = 0;
+
+            if (kredit.getTotalMonths().equals(12)) {
+
+                minDownPayment = (0.2 * kredit.getTotalPrice()) + (0.025 * kredit.getTotalPrice()) + (0.8 * kredit.getTotalPrice() * 0.006) + (0.0015 * (kredit.getTotalPrice() + (0.025 * kredit.getTotalPrice()))) + 10;
+
+            } else if (kredit.getTotalMonths().equals(24)) {
+
+                minDownPayment = (0.2 * kredit.getTotalPrice()) + (0.045 * kredit.getTotalPrice()) + (0.8 * kredit.getTotalPrice() * 0.006) + (0.0015 * (kredit.getTotalPrice() + (0.045 * kredit.getTotalPrice()))) + 10;
+
+            } else if (kredit.getTotalMonths().equals(36)) {
+
+                minDownPayment = (0.2 * kredit.getTotalPrice()) + (0.056 * kredit.getTotalPrice()) + (0.8 * kredit.getTotalPrice() * 0.006) + (0.0015 * (kredit.getTotalPrice() + (0.056 * kredit.getTotalPrice()))) + 10;
+
+            } else if (kredit.getTotalMonths().equals(48)) {
+
+                minDownPayment = (0.2 * kredit.getTotalPrice()) + (0.068 * kredit.getTotalPrice()) + (0.8 * kredit.getTotalPrice() * 0.006) + (0.0015 * (kredit.getTotalPrice() + (0.068 * kredit.getTotalPrice()))) + 10;
+
+            } else if (kredit.getTotalMonths().equals(60)) {
+
+                minDownPayment = (0.2 * kredit.getTotalPrice()) + (0.078 * kredit.getTotalPrice()) + (0.8 * kredit.getTotalPrice() * 0.006) + (0.0015 * (kredit.getTotalPrice() + (0.078 * kredit.getTotalPrice()))) + 10;
+
+            }
+
+            BigDecimal bigDecimal = BigDecimal.valueOf(minDownPayment).setScale(2, RoundingMode.HALF_UP);
+
+            kredit.setError(String.valueOf(bigDecimal));
             return kredit;
         }
 
@@ -61,7 +88,7 @@ public class KreditController {
     public Kredit getCreditForDongfeng(@RequestBody Kredit kredit) {
 
         if (kredit.getDownPayment() > kredit.getTotalPrice()) {
-            kredit.setError("İlkin ödəniş avtomobilin ümumi dəyərindən artıq ola bilməz");
+            kredit.setError("1");
             return kredit;
         }
 
@@ -90,7 +117,34 @@ public class KreditController {
         }
 
         if ((b+1) < kredit.getTotalPrice() * 0.2) {
-            kredit.setError("İlkin ödəniş avtomobilin ümumi dəyərinin 20%-dən az ola bilməz");
+
+            double minDownPayment = 0;
+
+            if (kredit.getTotalMonths().equals(12)) {
+
+                minDownPayment = (0.2 * kredit.getTotalPrice()) + 158 + (0.025 * kredit.getTotalPrice());
+
+            } else if (kredit.getTotalMonths().equals(24)) {
+
+                minDownPayment = (0.2 * kredit.getTotalPrice()) + 158 + (0.045 * kredit.getTotalPrice());
+
+            } else if (kredit.getTotalMonths().equals(36)) {
+
+                minDownPayment = (0.2 * kredit.getTotalPrice()) + 158 + (0.056 * kredit.getTotalPrice());
+
+            } else if (kredit.getTotalMonths().equals(48)) {
+
+                minDownPayment = (0.2 * kredit.getTotalPrice()) + 158 + (0.068 * kredit.getTotalPrice());
+
+            } else if (kredit.getTotalMonths().equals(59)) {
+
+                minDownPayment = (0.2 * kredit.getTotalPrice()) + 158 + (0.078 * kredit.getTotalPrice());
+
+            }
+
+            BigDecimal bigDecimal = BigDecimal.valueOf(minDownPayment).setScale(2, RoundingMode.HALF_UP);
+
+            kredit.setError(String.valueOf(bigDecimal));
             return kredit;
         }
 
